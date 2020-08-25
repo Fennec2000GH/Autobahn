@@ -8,3 +8,5 @@ W
 'Flite-1.0.0/LinkedList/LinkedListABC.py,9\e\9effbd3353f193e30067f79e27a5c0ee918ad36b
 Z
 *Flite-1.0.0/LinkedList/SinglyLinkedList.py,f\a\fad66d5a5b58a4bd125242109926e467d75824fb
+S
+#.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0

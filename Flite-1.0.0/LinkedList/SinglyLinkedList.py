@@ -1,12 +1,13 @@
 
 from __future__ import annotations
 import copy
+from abc import ABC
 from typing import Any, Sized
 
 from LinkedList.LinkedListABC import Node
 
 
-class SinglyLinkedNode(Node):
+class SinglyLinkedNode(Node, ABC):
     """Node for singly linked list"""
 
     # METHODS

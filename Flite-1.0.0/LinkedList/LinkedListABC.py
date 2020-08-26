@@ -6,6 +6,8 @@ from typing import Any, Collection, Optional
 
 class Node(ABC):
     """Abstract class for linked list node"""
+    def __init__(self) -> None:
+        self._linkedlist = None
 
     # PROPERTIES
     @property
@@ -59,20 +61,21 @@ class Node(ABC):
 
         :return: True if node is not part of any linked list, otherwise False
         """
-        pass
+        return self._linkedlist
 
-    # MUTATORS
+    @linkedlist.setter
     @abstractmethod
-    def __set_linkedlist(self, ll: LinkedList) -> None:
+    def linkedlist(self, new_linkedlist: LinkedList) -> None:
         """
         Sets a new linked list as owner of the node
 
-        :param ll: Linked list owner
+        :param new_linkedlist: Linked list owner
         :return: None
         """
-        pass
-
-
+        # Checking for valid arguments
+        if not isinstance(new_linkedlist, LinkedList):
+            raise TypeError('new_linkedlist must be of type LinkedList')
+        self._linkedlist = new_linkedlist
 class LinkedList(ABC):
     """Abstract class doe linked list"""
 

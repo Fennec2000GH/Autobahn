@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 import copy
 from multimethod import multimethod
@@ -14,9 +13,9 @@ class SinglyLinkedNode(Node):
     def __init__(self, val: Any) -> None:
         """Node initializer"""
         # Check for valid arguments
+        super(SinglyLinkedNode, self).__init__()
         self.__val = val
         self.__next = None
-        self.__linkedlist = None
 
     def __repr__(self) -> str:
         """
@@ -79,7 +78,7 @@ class SinglyLinkedNode(Node):
         return self.__next
 
     @next.setter
-    def next(self, new_next_node: SinglyLinkedNode) -> None:
+    def next(self, new_next: SinglyLinkedNode) -> None:
         """
         Sets new node to be the next node
 
@@ -87,46 +86,45 @@ class SinglyLinkedNode(Node):
         :return: None
         """
         # Checking for valid arguments
-        if new_next_node is None:
+        if new_next is None:
             raise ValueError('new_next cannot be None')
-        if isinstance(new_next_node, SinglyLinkedNode):
+        if isinstance(new_next, SinglyLinkedNode):
             raise TypeError('new_node must be of type Node')
-        self.__next = new_next_node
+        self.__next = new_next
 
     @property
-    def linkedlist(self) -> Optional[SinglyLinkedList]:
+    def linkedlist(self) -> Optional[Any]:
         """
         Gets any linked list that owns the node
 
         :return: True if node is not part of any linked list, otherwise False
         """
-        return self.__linkedlist
+        return self._linkedlist
 
-    # MUTATORS
-    def __set_linkedlist(self, ll: LinkedList) -> None:
+    @linkedlist.setter
+    def linkedlist(self, new_linkedlist: LinkedList) -> None:
         """
         Sets a new linked list as owner of the node
 
-        :param ll: Linked list owner
+        :param new_linkedlist: Linked list owner
         :return: None
         """
-        # Checking for valid arguments
-        if not isinstance(ll, SinglyLinkedList):
-            raise TypeError('ll must be of type SinglyLinkedList')
-        self.__linkedlist = ll
+        if not isinstance(new_linkedlist, SinglyLinkedList):
+            raise TypeError('new_linkedlist must be of type SinglyLinkedList')
+        self._linkedlist = new_linkedlist
 
 
 class SinglyLinkedList(LinkedList):
     """Simple implementation of a single linked list"""
 
-    def __init__(self, __iterable: Sized = None, capacity: int = None) -> None:
+    def __init__(self, __iterable: Collection[Any] = None, capacity: int = None) -> None:
         """Singly linked list initializer"""
         # Checking for valid arguments
-        if __iterable is not None and not isinstance(__iterable, Sized):
+        if __iterable is not None and not isinstance(__iterable, Collection):
             raise TypeError('__iterable must be of type Iterable')
         if capacity is not None and type(capacity) != int:
             raise TypeError('capacity must be of type int')
-        if capacity is not None and len(__iterable):
+        if capacity is not None and len(__iterable) > capacity:
             raise ValueError('__iterable must have a size equal to or less than capacity')
 
         # Assigning attributes
@@ -134,10 +132,17 @@ class SinglyLinkedList(LinkedList):
             self.__head = None
             self.__tail = None
         else:
-            self.__head = SinglyLinkedNode(val=copy.deepcopy(x=__iterable[0]))
+            if not isinstance(__iterable[0], SinglyLinkedNode) and isinstance(__iterable[0], Node):
+                raise TypeError('Head node can only be of type SinglyLinkedNode if it is a Node')
+            else:
+                self.__head = __iterable[0] if isinstance(__iterable[0], SinglyLinkedNode) else SinglyLinkedNode(
+                    val=__iterable[0])
             curr = self.__head  # Current node in linked list building
-            for index in range(1, len(__iterable)):
-                curr.__next = copy.deepcopy(x=__iterable[index])
+            for item in __iterable[1:]:
+                if not isinstance(item, SinglyLinkedNode) and isinstance(item, Node):
+                    raise TypeError('Item can only be of type SinglyLinkedNode if it is a Node')
+                else:
+                    curr.__next = item if isinstance(item, SinglyLinkedNode) else SinglyLinkedNode(val=item)
                 curr = curr.__next
             self.__tail = curr
 
@@ -280,11 +285,16 @@ class SinglyLinkedList(LinkedList):
         # Checking for valid arguments
         if not isinstance(node, SinglyLinkedNode):
             raise TypeError('node must be of type Node')
+        if node.linkedlist is not None:
+            raise ValueError('node must not yet exist any linked list')
+
+        # Pushing back node
         if self.is_empty():
             self.__head = self.__tail = node
         else:
             self.__tail.__next = node
             self.__tail = node
+        node.linkedlist = self
         self.__size += 1
 
     @multimethod
@@ -295,12 +305,13 @@ class SinglyLinkedList(LinkedList):
         :param val: Value to append
         :return: None
         """
-        # Checking for valid arguments
+        node = SinglyLinkedNode(val=val)
         if self.is_empty():
-            self.__head = self.__tail = SinglyLinkedNode(val=val)
+            self.__head = self.__tail = node
         else:
-            self.__tail.__next = SinglyLinkedNode(val=val)
+            self.__tail.__next = node
             self.__tail = self.__tail.__next
+        node.linkedlist = self
         self.__size += 1
 
     @multimethod
@@ -315,13 +326,14 @@ class SinglyLinkedList(LinkedList):
         # Checking for valid arguments
         if not isinstance(node, SinglyLinkedNode):
             raise TypeError('node must be of type Node')
-        if node.__next is not None:
+        if node.linkedlist is not None:
             raise ValueError('node is already part of some linked list')
         if self.is_empty():
             self.__head = self.__tail = node
         else:
             node.__next = self.__head
             self.__head = node
+        node.linkedlist = self
         self.__size += 1
 
     @multimethod
@@ -332,13 +344,13 @@ class SinglyLinkedList(LinkedList):
         :param val: Value to prepend
         :return: None
         """
-        # Checking for valid arguments
+        node = SinglyLinkedNode(val=val)
         if self.is_empty():
-            self.__head = self.__tail = SinglyLinkedNode(val=val)
+            self.__head = self.__tail = node
         else:
-            node = SinglyLinkedNode(val=val)
             node.__next = self.__head
             self.__head = node
+        node.linkedlist = self
         self.__size += 1
 
     def move_before(self, node_to_move: SinglyLinkedNode, node_referenced: SinglyLinkedNode) -> None:
@@ -482,11 +494,14 @@ class SinglyLinkedList(LinkedList):
                     before_node_referenced = curr
                     break
                 if curr.__next is None:
-                    raise ValueError('One or both of node to be moved and node referenced does not exist in linked list')
+                    raise ValueError(
+                        'One or both of node to be moved and node referenced does not exist in linked list')
                 curr = curr.__next
 
             node_to_insert.__next = node_referenced
             before_node_referenced.__next = node_to_insert
+
+            self.__size += 1
 
     @multimethod
     def insert_before(self, val: Any, node_referenced: SinglyLinkedNode, **kwargs) -> None:
@@ -559,4 +574,3 @@ class SinglyLinkedList(LinkedList):
         temp = node2.val
         node2.val = node1.val
         node1.val = temp
-

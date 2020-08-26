@@ -1,4 +1,5 @@
 
-Hpython:S1481Á"(Remove the unused local variable "curr".( €µÀ8›·Ö¼Â.
-_python:S1481Ã":Remove the unused local variable "before_node_referenced".(‚ğ¶™ùÿÿÿÿ8ëÍØ¼Â.
-\python:S1481Â"7Remove the unused local variable "before_node_to_move".(‘İæØúÿÿÿÿ8¢€×¼Â.
+Zpython:S1144j";Remove this unused class-private '__set_linkedlist' method.(Šõ¯Ë8‚ÏåÅÂ.
+ypython:S3776"TRefactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.(Š«ë“ıÿÿÿÿ8”²óÆÂ.
+tpython:S3776Ã"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(ë±‰¦8¼îÑÆÂ.
+ypython:S3776Ø"TRefactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.(¤ôµ ûÿÿÿÿ8šÓûÀÂ.

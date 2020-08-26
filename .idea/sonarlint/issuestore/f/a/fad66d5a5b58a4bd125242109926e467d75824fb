@@ -1,4 +1,4 @@
 
-xpython:S4487o"TRemove this unread private attribute '__tail' or refactor the code to use its value.(¿†š¿ıÿÿÿÿ8’ÏØÆÁ.
-wpython:S4487x"XRemove this unread private attribute '__capacity' or refactor the code to use its value.(Àõ¸8’ÏØÆÁ.
-Ipython:S1481")Remove the unused local variable "index".(Ìõ¥8’ÏØÆÁ.
+Hpython:S1481Á"(Remove the unused local variable "curr".( €µÀ8›·Ö¼Â.
+_python:S1481Ã":Remove the unused local variable "before_node_referenced".(‚ğ¶™ùÿÿÿÿ8ëÍØ¼Â.
+\python:S1481Â"7Remove the unused local variable "before_node_to_move".(‘İæØúÿÿÿÿ8¢€×¼Â.

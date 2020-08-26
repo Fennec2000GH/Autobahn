@@ -8,5 +8,11 @@ W
 'Flite-1.0.0/LinkedList/LinkedListABC.py,9\e\9effbd3353f193e30067f79e27a5c0ee918ad36b
 Z
 *Flite-1.0.0/LinkedList/SinglyLinkedList.py,f\a\fad66d5a5b58a4bd125242109926e467d75824fb
-S
-#.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
+9
+	README.md,8\e\8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
+M
+Flite-1.0.0/Array/__init__.py,3\e\3e7afafbbea2ab037d9678a6f7df438cf965732a
+8
+setup.py,8\e\8e2edce0d507e1297474f25c00cae94258db38d8
+\
+,Flite-1.0.0/LinkedList/UnrolledLinkedList.py,4\4\44f962891748e24cbd8eb0899f945fedc0936038

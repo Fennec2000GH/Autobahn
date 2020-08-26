@@ -1,8 +1,7 @@
-
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from multimethod import multimethod
-from typing import Any, Optional
+from typing import Any, Collection, Optional
 
 
 class Node(ABC):
@@ -12,17 +11,65 @@ class Node(ABC):
     @property
     @abstractmethod
     def val(self) -> Any:
+        """
+        Gets value in node
+
+        :return: Value stored in node
+        """
         pass
 
     @val.setter
     @abstractmethod
     def val(self, new_val: Any) -> None:
+        """
+        Sets value in node
+
+        :param new_val: New value to replace current value in node
+        :return: None
+        """
         pass
 
     # ACCESSORS
     @property
     @abstractmethod
-    def next(self) -> Node:
+    def next(self) -> Optional[Node]:
+        """
+        Gets next node sequentially in linked list
+
+        :return: Node referenced by next property, otherwise None if current node is tail
+        """
+        pass
+
+    @next.setter
+    @abstractmethod
+    def next(self, new_next: Node) -> None:
+        """
+        Sets new node to be the next node
+
+        :param new_next: New node for the next attribute
+        :return: None
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def linkedlist(self) -> Optional[Any]:
+        """
+        Gets any linked list that owns the node
+
+        :return: True if node is not part of any linked list, otherwise False
+        """
+        pass
+
+    # MUTATORS
+    @abstractmethod
+    def __set_linkedlist(self, ll: LinkedList) -> None:
+        """
+        Sets a new linked list as owner of the node
+
+        :param ll: Linked list owner
+        :return: None
+        """
         pass
 
 
@@ -73,12 +120,44 @@ class LinkedList(ABC):
         """
         pass
 
+    @abstractmethod
+    @multimethod
+    def contains(self, nodes: Collection[Node]) -> bool:
+        """
+        Checks whether each node in nodes exists in linked list.
+
+        :param nodes: Collection of nodes
+        :return: True if each node in given collection of nodes is in linked list, otherwise False
+        """
+        pass
+
+    @abstractmethod
+    @multimethod
+    def contains(self, vals: Collection[Any]) -> bool:
+        """
+        Checks whether each value in vals exists in any node in linked list
+
+        :param vals: Collection of values of any type
+        :return: True if each value in given collection of values is in any node in linked list, otherwise False
+        """
+        pass
+
+    @abstractmethod
+    def is_empty(self) -> bool:
+        """
+        Check if there are currently no nodes in linked list
+
+        :return: True if no nodes exist yet in linked list, otherwise False
+        """
+        pass
+
     # MUTATORS
     @abstractmethod
     @multimethod
     def push_back(self, node: Node) -> None:
         """
-        Appends given node to end of linked list
+        Appends given node to end of linked list. Linked list is not modified if node already belongs
+        to this linked list or another linked list.
 
         :param node: Node to append
         :return: None
@@ -89,7 +168,7 @@ class LinkedList(ABC):
     @multimethod
     def push_back(self, val: Any) -> None:
         """
-        Appends new node with given value to end of linked list
+        Appends new node with given value to end of linked list.
 
         :param val: Value to append
         :return: None
@@ -100,7 +179,8 @@ class LinkedList(ABC):
     @multimethod
     def push_front(self, node: Node) -> None:
         """
-        Prepends given node to front of linked list
+        Prepends given node to front of linked list. Linked list is not modified if node already belongs
+        to this linked list or another linked list.
 
         :param node: Node to prepend
         :return: None
@@ -111,7 +191,7 @@ class LinkedList(ABC):
     @multimethod
     def push_front(self, val: Any) -> None:
         """
-        Prepends new node with given value to front of linked list
+        Prepends new node with given value to front of linked list.
 
         :param val: Value to prepend
         :return: None
@@ -193,7 +273,7 @@ class LinkedList(ABC):
         pass
 
     @abstractmethod
-    def swap(self, node1: Node, node2: Node) -> Node:
+    def swap(self, node1: Node, node2: Node) -> None:
         """
         Swap values for two existing nodes in linked list. If one or both nodes do not exist in the linked list,
         the linked list is not modified.

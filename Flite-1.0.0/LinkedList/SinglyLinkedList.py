@@ -7,11 +7,16 @@ from LinkedList.LinkedListABC import LinkedList, Node
 
 
 class SinglyLinkedNode(Node):
-    """Node for singly linked list"""
+    """Node implementation for singly linked list"""
 
     # METHODS
     def __init__(self, val: Any) -> None:
-        """Node initializer"""
+        """
+        Singly linked node initializer
+
+        :param val: Value for node
+        :return : None
+        """
         # Check for valid arguments
         super(SinglyLinkedNode, self).__init__()
         self.__val = val
@@ -117,28 +122,30 @@ class SinglyLinkedNode(Node):
 class SinglyLinkedList(LinkedList):
     """Simple implementation of a single linked list"""
 
-    def __init__(self, __iterable: Collection[Any] = None, capacity: int = None) -> None:
+    def __init__(self, iterable: Collection[Any] = None, capacity: int = None, allow_loop: bool = False) -> None:
         """Singly linked list initializer"""
+        super().__init__()
+
         # Checking for valid arguments
-        if __iterable is not None and not isinstance(__iterable, Collection):
-            raise TypeError('__iterable must be of type Iterable')
+        if iterable is not None and not isinstance(iterable, Collection):
+            raise TypeError('iterable must be of type Iterable')
         if capacity is not None and type(capacity) != int:
             raise TypeError('capacity must be of type int')
-        if capacity is not None and len(__iterable) > capacity:
-            raise ValueError('__iterable must have a size equal to or less than capacity')
+        if capacity is not None and len(iterable) > capacity:
+            raise ValueError('iterable must have a size equal to or less than capacity')
 
         # Assigning attributes
-        if __iterable is None or len(__iterable) == 0:
+        if iterable is None or len(iterable) == 0:
             self.__head = None
             self.__tail = None
         else:
-            if not isinstance(__iterable[0], SinglyLinkedNode) and isinstance(__iterable[0], Node):
+            if not isinstance(iterable[0], SinglyLinkedNode) and isinstance(iterable[0], Node):
                 raise TypeError('Head node can only be of type SinglyLinkedNode if it is a Node')
             else:
-                self.__head = __iterable[0] if isinstance(__iterable[0], SinglyLinkedNode) else SinglyLinkedNode(
-                    val=__iterable[0])
+                self.__head = iterable[0] if isinstance(iterable[0], SinglyLinkedNode) else SinglyLinkedNode(
+                    val=iterable[0])
             curr = self.__head  # Current node in linked list building
-            for item in __iterable[1:]:
+            for item in iterable[1:]:
                 if not isinstance(item, SinglyLinkedNode) and isinstance(item, Node):
                     raise TypeError('Item can only be of type SinglyLinkedNode if it is a Node')
                 else:
@@ -146,16 +153,9 @@ class SinglyLinkedList(LinkedList):
                 curr = curr.__next
             self.__tail = curr
 
-        self.__capacity = capacity
-        self.__size = len(__iterable)
-
-    def __len__(self) -> int:
-        """
-        Gets number of elements in linked list
-
-        :return: int denoting the size of linked list
-        """
-        return self.__size
+        self._capacity = capacity
+        self._size = len(iterable)
+        self.__allow_loop = allow_loop
 
     def __eq__(self, other: SinglyLinkedList) -> bool:
         """
@@ -164,11 +164,11 @@ class SinglyLinkedList(LinkedList):
         :return: True if each node in both linked lists match in value, otherwise False
         """
         # Edge cases
-        if other is None or self.__size != other.__size:
+        if other is None or len(self) != len(other):
             return False
         curr = self.__head
         curr_other = other.__head
-        for _ in range(self.__size):
+        for _ in range(len(self)):
             if curr != curr_other:
                 return False
             curr = curr.__next
@@ -195,13 +195,28 @@ class SinglyLinkedList(LinkedList):
         return self.__tail
 
     @property
-    def capacity(self) -> int:
+    def allow_loop(self) -> bool:
         """
-        Gets the capacity of the linked list
+        Checks whether the tail is allowed to form a loop with a previous node
 
-        :return: The maximum number of allowed nodes, or None if no capacity was set during initialization
+        :return: True if loop is allowed, otherwise False
         """
-        return self.__capacity
+        return self.__allow_loop
+
+    @allow_loop.setter
+    def allow_loop(self, new_allow_loop: bool) -> None:
+        """
+        Sets permission whether to allow loops or not
+
+        :param new_allow_loop: Boolean indicating the permission to allow loops or not
+        :return: None
+        """
+        # Checking for valid arguments
+        if type(new_allow_loop) != bool:
+            raise TypeError('new_allow_loop must be of type bool')
+        self.__allow_loop = new_allow_loop
+        if not self.__allow_loop and self.__tail.__next is not None:
+            self.__tail = None
 
     # ACCESSORS
     @multimethod
@@ -291,11 +306,16 @@ class SinglyLinkedList(LinkedList):
         # Pushing back node
         if self.is_empty():
             self.__head = self.__tail = node
+        elif self.__tail.__next is not None and self.__allow_loop:
+            junction = self.__tail.__next  # Original juntion node that tail closes loop
+            node.__next = junction
+            self.__tail.__next = node
+            self.__tail = node
         else:
             self.__tail.__next = node
             self.__tail = node
         node.linkedlist = self
-        self.__size += 1
+        self._size += 1
 
     @multimethod
     def push_back(self, val: Any) -> None:
@@ -305,14 +325,10 @@ class SinglyLinkedList(LinkedList):
         :param val: Value to append
         :return: None
         """
+        if isinstance(val, Node):
+            raise TypeError('val can be of any type except Node or any derived classes')
         node = SinglyLinkedNode(val=val)
-        if self.is_empty():
-            self.__head = self.__tail = node
-        else:
-            self.__tail.__next = node
-            self.__tail = self.__tail.__next
-        node.linkedlist = self
-        self.__size += 1
+        self.push_back(node=node)
 
     @multimethod
     def push_front(self, node: SinglyLinkedNode) -> None:
@@ -328,13 +344,19 @@ class SinglyLinkedList(LinkedList):
             raise TypeError('node must be of type Node')
         if node.linkedlist is not None:
             raise ValueError('node is already part of some linked list')
+
+        # Pushing node to front
         if self.is_empty():
             self.__head = self.__tail = node
+        elif self.__tail.__next is self.__head and self.__allow_loop:
+            node.__next = self.__head
+            self.__tail.__next = node
+            self.__head = node
         else:
             node.__next = self.__head
             self.__head = node
         node.linkedlist = self
-        self.__size += 1
+        self._size += 1
 
     @multimethod
     def push_front(self, val: Any) -> None:
@@ -344,14 +366,10 @@ class SinglyLinkedList(LinkedList):
         :param val: Value to prepend
         :return: None
         """
+        if isinstance(val, Node):
+            raise TypeError('val can be of any type except Node or any derived classes')
         node = SinglyLinkedNode(val=val)
-        if self.is_empty():
-            self.__head = self.__tail = node
-        else:
-            node.__next = self.__head
-            self.__head = node
-        node.linkedlist = self
-        self.__size += 1
+        self.push_front(node=node)
 
     def move_before(self, node_to_move: SinglyLinkedNode, node_referenced: SinglyLinkedNode) -> None:
         """
@@ -493,15 +511,14 @@ class SinglyLinkedList(LinkedList):
                 if curr.__next is node_referenced:
                     before_node_referenced = curr
                     break
-                if curr.__next is None:
-                    raise ValueError(
-                        'One or both of node to be moved and node referenced does not exist in linked list')
+                if curr.__next in [None, self.__head]:
+                    raise ValueError('One or both of node to be moved and node referenced does not exist in linked list')
                 curr = curr.__next
 
             node_to_insert.__next = node_referenced
             before_node_referenced.__next = node_to_insert
-
-            self.__size += 1
+            node_to_insert.linkedlist = self
+            self._size += 1
 
     @multimethod
     def insert_before(self, val: Any, node_referenced: SinglyLinkedNode, **kwargs) -> None:
@@ -515,7 +532,8 @@ class SinglyLinkedList(LinkedList):
         # Checking for valid arguments
         if isinstance(val, Node):
             raise TypeError('val can be of any type except Node or any derived classes')
-        self.insert_before(node_to_insert=SinglyLinkedNode(val=val), node_referenced=node_referenced)
+        node_to_insert = SinglyLinkedNode(val=val)
+        self.insert_before(node_to_insert=node_to_insert, node_referenced=node_referenced)
 
     def insert_after(self, node_to_insert: SinglyLinkedNode, node_referenced: SinglyLinkedNode, **kwargs) -> None:
         """
@@ -542,11 +560,12 @@ class SinglyLinkedList(LinkedList):
 
         # Inserting node
         # Node referencing location is tail
+        node_to_insert.__next = node_referenced.__next
+        node_referenced.__next = node_to_insert
         if node_referenced is self.__tail:
-            self.push_back(node=node_to_insert)
-        else:
-            node_to_insert.__next = node_referenced.__next
-            node_referenced.__next = node_to_insert
+            self.__tail = node_to_insert
+        node_to_insert.linkedlist = self
+        self._size += 1
 
     @multimethod
     def insert_after(self, val: Any, node_referenced: SinglyLinkedNode, **kwargs) -> None:
@@ -560,7 +579,8 @@ class SinglyLinkedList(LinkedList):
         # Checking for valid arguments
         if isinstance(val, Node):
             raise TypeError('val can be of any type except Node or any derived classes')
-        self.insert_after(node_to_insert=SinglyLinkedNode(val=val), node_referenced=node_referenced)
+        node_to_insert = SinglyLinkedNode(val=val)
+        self.insert_after(node_to_insert=node_to_insert, node_referenced=node_referenced)
 
     def swap(self, node1: Node, node2: Node) -> None:
         """

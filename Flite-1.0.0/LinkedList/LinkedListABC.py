@@ -6,7 +6,14 @@ from typing import Any, Collection, Optional
 
 class Node(ABC):
     """Abstract class for linked list node"""
+
+    # METHODS
     def __init__(self) -> None:
+        """
+        Node initializer simply holds protected linked list attribute.
+
+        :return: None
+        """
         self._linkedlist = None
 
     # PROPERTIES
@@ -76,8 +83,28 @@ class Node(ABC):
         if not isinstance(new_linkedlist, LinkedList):
             raise TypeError('new_linkedlist must be of type LinkedList')
         self._linkedlist = new_linkedlist
+
+
 class LinkedList(ABC):
-    """Abstract class doe linked list"""
+    """Abstract class for linked list"""
+
+    # METHODS
+    def __init__(self) -> None:
+        """
+        Linked list initializer simply holds protected size and capacity attributes.
+
+        :return: None
+        """
+        self._capacity = None
+        self._size = 0
+
+    def __len__(self) -> int:
+        """
+        Gets number of elements in linked list
+
+        :return: int denoting the size of linked list
+        """
+        return self._size
 
     # PROPERTIES
     @property
@@ -99,6 +126,15 @@ class LinkedList(ABC):
         :return: Last node of linked list, if not empty, otherwise None
         """
         pass
+
+    @property
+    def capacity(self) -> Optional[int]:
+        """
+        Gets the capacity
+
+        :return: None if no capacity was set during initialization, otherwise a positive integer
+        """
+        return self._capacity
 
     # ACCESSORS
     @abstractmethod

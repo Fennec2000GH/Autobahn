@@ -227,8 +227,11 @@ class SinglyLinkedList(LinkedList):
         :param node: Node to check for existence
         :return: True if node exists in linked list, otherwise False
         """
+        # Checking for valid arguments
         if not isinstance(node, SinglyLinkedNode):
             raise TypeError('node must be of type SinglyLinkedNode')
+
+        # Edge case
         if self.is_empty():
             return False
 
@@ -248,6 +251,7 @@ class SinglyLinkedList(LinkedList):
         :param val: Value to check for existence
         :return: True if node with val exists in linked list, otherwise False
         """
+        # Edge case
         if self.is_empty():
             return False
 
@@ -325,6 +329,7 @@ class SinglyLinkedList(LinkedList):
         :param val: Value to append
         :return: None
         """
+        # Check for valid arguments
         if isinstance(val, Node):
             raise TypeError('val can be of any type except Node or any derived classes')
         node = SinglyLinkedNode(val=val)
@@ -366,6 +371,7 @@ class SinglyLinkedList(LinkedList):
         :param val: Value to prepend
         :return: None
         """
+        # Checking for valid arguments
         if isinstance(val, Node):
             raise TypeError('val can be of any type except Node or any derived classes')
         node = SinglyLinkedNode(val=val)

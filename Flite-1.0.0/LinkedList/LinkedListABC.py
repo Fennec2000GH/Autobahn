@@ -15,6 +15,7 @@ class Node(ABC):
         :return: None
         """
         self._linkedlist = None
+        self._next = None
 
     # PROPERTIES
     @property
@@ -38,7 +39,6 @@ class Node(ABC):
         """
         pass
 
-    # ACCESSORS
     @property
     @abstractmethod
     def next(self) -> Optional[Node]:
@@ -68,7 +68,7 @@ class Node(ABC):
 
         :return: True if node is not part of any linked list, otherwise False
         """
-        return self._linkedlist
+        pass
 
     @linkedlist.setter
     @abstractmethod
@@ -79,10 +79,7 @@ class Node(ABC):
         :param new_linkedlist: Linked list owner
         :return: None
         """
-        # Checking for valid arguments
-        if not isinstance(new_linkedlist, LinkedList):
-            raise TypeError('new_linkedlist must be of type LinkedList')
-        self._linkedlist = new_linkedlist
+        pass
 
 
 class LinkedList(ABC):
@@ -102,31 +99,11 @@ class LinkedList(ABC):
         """
         Gets number of elements in linked list
 
-        :return: int denoting the size of linked list
+        :return: Integer denoting the size of linked list
         """
         return self._size
 
     # PROPERTIES
-    @property
-    @abstractmethod
-    def head(self) -> Optional[Node]:
-        """
-        Head of linked list
-
-        :return: First node of linked list, if not empty, otherwise None
-        """
-        pass
-
-    @property
-    @abstractmethod
-    def tail(self) -> Optional[Node]:
-        """
-        Tail of linked list
-
-        :return: Last node of linked list, if not empty, otherwise None
-        """
-        pass
-
     @property
     def capacity(self) -> Optional[int]:
         """

@@ -1,10 +1,11 @@
+
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from multimethod import multimethod
 from typing import Any, Collection, Optional
 
 
-class Node(ABC):
+class AbstractNode(ABC):
     """Abstract class for linked list node"""
 
     # METHODS
@@ -15,7 +16,6 @@ class Node(ABC):
         :return: None
         """
         self._linkedlist = None
-        self._next = None
 
     # PROPERTIES
     @property
@@ -41,28 +41,7 @@ class Node(ABC):
 
     @property
     @abstractmethod
-    def next(self) -> Optional[Node]:
-        """
-        Gets next node sequentially in linked list
-
-        :return: Node referenced by next property, otherwise None if current node is tail
-        """
-        pass
-
-    @next.setter
-    @abstractmethod
-    def next(self, new_next: Node) -> None:
-        """
-        Sets new node to be the next node
-
-        :param new_next: New node for the next attribute
-        :return: None
-        """
-        pass
-
-    @property
-    @abstractmethod
-    def linkedlist(self) -> Optional[Any]:
+    def linkedlist(self) -> Optional[AbstractLinkedList]:
         """
         Gets any linked list that owns the node
 
@@ -70,19 +49,8 @@ class Node(ABC):
         """
         pass
 
-    @linkedlist.setter
-    @abstractmethod
-    def linkedlist(self, new_linkedlist: LinkedList) -> None:
-        """
-        Sets a new linked list as owner of the node
 
-        :param new_linkedlist: Linked list owner
-        :return: None
-        """
-        pass
-
-
-class LinkedList(ABC):
+class AbstractLinkedList(ABC):
     """Abstract class for linked list"""
 
     # METHODS
@@ -116,7 +84,7 @@ class LinkedList(ABC):
     # ACCESSORS
     @abstractmethod
     @multimethod
-    def contains(self, node: Node) -> bool:
+    def contains(self, node: AbstractNode) -> bool:
         """
         Checks whether given node is a contained reference in linked list
 
@@ -138,7 +106,7 @@ class LinkedList(ABC):
 
     @abstractmethod
     @multimethod
-    def contains(self, nodes: Collection[Node]) -> bool:
+    def contains(self, nodes: Collection[AbstractNode]) -> bool:
         """
         Checks whether each node in nodes exists in linked list.
 
@@ -170,7 +138,7 @@ class LinkedList(ABC):
     # MUTATORS
     @abstractmethod
     @multimethod
-    def push_back(self, node: Node) -> None:
+    def push_back(self, node: AbstractNode) -> None:
         """
         Appends given node to end of linked list. Linked list is not modified if node already belongs
         to this linked list or another linked list.
@@ -193,7 +161,7 @@ class LinkedList(ABC):
 
     @abstractmethod
     @multimethod
-    def push_front(self, node: Node) -> None:
+    def push_front(self, node: AbstractNode) -> None:
         """
         Prepends given node to front of linked list. Linked list is not modified if node already belongs
         to this linked list or another linked list.
@@ -215,7 +183,7 @@ class LinkedList(ABC):
         pass
 
     @abstractmethod
-    def move_before(self, node_to_move: Node, node_referenced: Node) -> None:
+    def move_before(self, node_to_move: AbstractNode, node_referenced: AbstractNode) -> None:
         """
         Move node existing in linked list to right before another node existing in the same linked list.
         Linked list is not modified if either node does not exist within the linked list.
@@ -227,7 +195,7 @@ class LinkedList(ABC):
         pass
 
     @abstractmethod
-    def move_after(self, node_to_move: Node, node_referenced: Node) -> None:
+    def move_after(self, node_to_move: AbstractNode, node_referenced: AbstractNode) -> None:
         """
         Move node existing in linked list to right after another node existing in the same linked list.
         Linked list is not modified if either node does not exist within the linked list.
@@ -240,7 +208,7 @@ class LinkedList(ABC):
 
     @abstractmethod
     @multimethod
-    def insert_before(self, node_to_insert: Node, node_referenced: Node, **kwargs) -> None:
+    def insert_before(self, node_to_insert: AbstractNode, node_referenced: AbstractNode, **kwargs) -> None:
         """
         Insert node which does not belong to any linked list right before some existing node in linked list.
         Linked list is not modified if the node intended for insertion is already part of another linked list.
@@ -253,7 +221,7 @@ class LinkedList(ABC):
 
     @abstractmethod
     @multimethod
-    def insert_before(self, val: Any, node_referenced: Node, **kwargs) -> None:
+    def insert_before(self, val: Any, node_referenced: AbstractNode, **kwargs) -> None:
         """
         Insert new node with given value right before some existing node in linked list.
 
@@ -265,7 +233,7 @@ class LinkedList(ABC):
 
     @abstractmethod
     @multimethod
-    def insert_after(self, node_to_insert: Node, node_referenced: Node, **kwargs) -> None:
+    def insert_after(self, node_to_insert: AbstractNode, node_referenced: AbstractNode, **kwargs) -> None:
         """
         Insert node which does not belong to any linked list right after some existing node in linked list.
         Linked list is not modified if the node intended for insertion is already part of another linked list.
@@ -278,7 +246,7 @@ class LinkedList(ABC):
 
     @abstractmethod
     @multimethod
-    def insert_after(self, val: Any, node_referenced: Node, **kwargs) -> None:
+    def insert_after(self, val: Any, node_referenced: AbstractNode, **kwargs) -> None:
         """
         Insert new node with given value right after some existing node in linked list.
 
@@ -289,7 +257,7 @@ class LinkedList(ABC):
         pass
 
     @abstractmethod
-    def swap(self, node1: Node, node2: Node) -> None:
+    def swap(self, node1: AbstractNode, node2: AbstractNode) -> None:
         """
         Swap values for two existing nodes in linked list. If one or both nodes do not exist in the linked list,
         the linked list is not modified.

@@ -2,7 +2,8 @@
 from __future__ import annotations
 import copy
 from multimethod import multimethod
-from typing import Any, Collection, Optional, Sized
+import param
+from typing import Any, Collection, List, Optional
 
 from LinkedList.LinkedListABC import AbstractLinkedList, AbstractNode
 
@@ -21,13 +22,13 @@ class XORNode(AbstractNode):
         # Check for valid arguments
         super(XORNode, self).__init__()
         self.__val = copy.deepcopy(x=val)
-        self.__npx = None
+        self.__npx = param.Integer(default=0, allow_None=False, doc='XOR between ids of both adjacent neighbors')
 
     def __repr__(self) -> str:
         """
         Representation of XOR node
 
-        :return: official str representation of XOR node
+        :return: Official str representation of XOR node
         """
         return f'XORNode(val={str(self.__val)})'
 
@@ -75,6 +76,15 @@ class XORNode(AbstractNode):
         self.__val = new_val
 
     @property
+    def npx(self) -> int:
+        """
+        Get the XOR value stored inside XORNode
+
+        :return: Positive integer if XORNode is bordered by at least one other XORNode, or 0
+        """
+        return self.__npx
+
+    @property
     def linkedlist(self) -> Optional[LinkedList]:
         """
         Gets any linked list that owns the node
@@ -102,10 +112,9 @@ class LinkedList(AbstractLinkedList):
         # Assigning attributes
         self._capacity = capacity
         self._size = len(iterable)
-        self.__allow_loop = False
 
         # Creating linked list
-        self.__nodes = set()
+        self.__nodes = param.Dict(default=dict(), allow_None=False, doc='Keeps references of XORNodes by id')
         self.__head = self.__tail = None
         if iterable is not None and len(iterable) > 0:
 
@@ -114,7 +123,7 @@ class LinkedList(AbstractLinkedList):
                 raise ValueError('Head is already part of another linked list')
             self.__head = self.__tail = iterable[0] if isinstance(iterable[0], XORNode) else XORNode(val=iterable[0])
             self.__head._linkedlist = self
-            self.__nodes.add(self.__head)
+            self.__nodes.update({id(self.__head) : self.__head})
 
             # References to adjacent pair of XORNodes for traversal
             left = None
@@ -132,7 +141,7 @@ class LinkedList(AbstractLinkedList):
                 right._XORNode__npx = (0 if left is None else id(left)) ^ id(item_to_add)
                 left = right
                 right = item_to_add
-                self.__nodes.add(item_to_add)
+                self.__nodes.update({id(item_to_add) : item_to_add})
 
             # Adding tail
             last_item = iterable[len(iterable) - 1]
@@ -143,8 +152,8 @@ class LinkedList(AbstractLinkedList):
             else:
                 self.__tail = XORNode(val=last_item)
             right._XORNode__npx = (0 if left is None else id(left)) ^ id(self.__tail)
-            self.__tail._XORNode_npx = id(right)  # npx of tail is id of node right before tail
-            self.__nodes.add(self.__tail)
+            self.__tail._XORNode__npx = id(right)  # npx of tail is id of node right before tail
+            self.__nodes.update({id(self.__tail) : self.__tail})
 
     def __eq__(self, other: LinkedList) -> bool:
         """
@@ -155,11 +164,27 @@ class LinkedList(AbstractLinkedList):
         # Edge cases
         if other is None or len(self) != len(other):
             return False
-        for node_self in self.__nodes:
+        for node_self in list(self.__nodes.values()):
             for node_other in other.__nodes:
                 if node_self != node_other:
                     return False
         return True
+
+    def __repr__(self) -> str:
+        """
+        Representation of XOR doubly linked list
+
+        :return: Official str representation of XOR doubly linked list
+        """
+        return f'LinkedList(iterable={self.tolist()}, capacity={self._capacity})'
+
+    def __str__(self) -> str:
+        """
+        Representation of linked list as printed str
+
+        :return: str when applying print to linked list
+        """
+        return f'linked list of size {self._size}'
 
     # PROPERTIES
     @property
@@ -348,3 +373,31 @@ class LinkedList(AbstractLinkedList):
         temp = node2.val
         node2.val = node1.val
         node1.val = temp
+
+    def tolist(self) -> List[Any]:
+        """
+        Converts values in linked lsit in sequential order to list.
+
+        :return: List of all values in sequential order.
+        """
+        # Edge cases
+        if self.is_empty():
+            return list()
+        l = list([copy.deepcopy(x=self.__head.val)])
+        if self._size == 1:
+            return l
+
+        # Normal cases
+        left = self.__head
+        right = self.__nodes[self.__head.npx]
+
+        while right is not self.__tail:
+            l.append(copy.deepcopy(x=right.val))
+            new_right = self.__nodes.get(key=left.npx ^ right.npx, default=None)
+            if new_right is None:
+                raise ValueError('Error encountered in tolist function')
+            left = right
+            right = new_right
+
+        l.append(copy.deepcopy(x=self.__tail.val))
+        return l

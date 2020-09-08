@@ -52,11 +52,11 @@ class HashedArrayTree:
         :return: Element stored at given index, or None if no element exists at the index
         """
         # Checking for valid arguments
-        if index >= self._capacity or index < -self._capacity:
+        if index >= self.__capacity or index < -self.__capacity:
             raise IndexError('index is out of bounds; it must be in [-capacity, capacity - 1]')
 
         top_index = index >> self.__power
-        leaf_index = index & (self._capacity - 1)
+        leaf_index = index & (self.__capacity - 1)
         return self.__hat[top_index][leaf_index]
 
     def __setitem__(self, index: int, element: Any) -> None:

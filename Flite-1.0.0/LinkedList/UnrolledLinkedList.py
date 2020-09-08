@@ -1,41 +1,42 @@
 
 from __future__ import annotations
 from deprecated import deprecated
+import itertools
 from multimethod import multimethod
 import math
 import numpy as np
 from typing import Any, Collection, Optional
 
-from LinkedList.LinkedListABC import Node, LinkedList
+from LinkedList.LinkedListABC import AbstractLinkedList
 
 
-class UnrolledNode(Node):
+class UnrolledNode:
     """Node implementation for unrolled linked list"""
 
-    def __init__(self, vals: Optional[Collection] = None, node_capacity: int = 10) -> None:
+    def __init__(self, node_capacity: int, iterable: Collection = None) -> None:
         """
         Unrolled linked list initializer
 
-        :param vals: Collection of values to initilly fill node
+        :param iterable: Collection of values to initially fill node
         :param node_capacity: Maximum number of values node can hold
         :return: None
         """
-        super().__init__()
+        super(UnrolledNode, self).__init__()
 
         # Checking for valid arguments
         if not type(node_capacity) != int:
             raise TypeError('capacity must be of type int')
         if node_capacity <= 0:
             raise ValueError('capacity must be positive')
-        if len(vals) > node_capacity:
+        if len(iterable) > node_capacity:
             raise ValueError('The number of values for initialization must not exceed capacity')
 
         # Assigning attributes
         self.__node_capacity = node_capacity
-        self.__array = np.empty(shape=(self.__node_capacity,), dtype=Any)
-        self.__index = 0
+        self.__array = np.full(shape=(self.__node_capacity,), fill_value=np.nan, dtype=Any)
 
-        for index, item in enumerate(iterable=vals, start=0):
+        # Initializing values from iterable
+        for index, item in enumerate(iterable=iterable, start=0):
             self.__array[index] = item
 
     def __eq__(self, other: UnrolledNode) -> bool:
@@ -62,30 +63,35 @@ class UnrolledNode(Node):
 
         :return: Integer counting the number of values currently stored
         """
-        return np.count_nonzero(a=[0 if item is None else 1 for item in self.__array], axis=None)
+        return len([element for element in itertools.takewhile(predicate=lambda x: x is not np.nan, iterable=self.__array)])
+
+    def __getitem__(self, item):
 
     # PROPERTIES
     @property
-    def val(self) -> Any:
+    def array(self) -> np.ndarray:
         """
-        Gets value in node
+        Gets entire array of values in UnrolledNode
 
-        :return: Value stored in node
+        :return: Values stored in UnrolledNode
         """
-        return self.__array[self.__index]
+        return self.__array
 
-    @val.setter
-    def val(self, new_val: Any) -> None:
+    @array.setter
+    def array(self, new_array: Collection) -> None:
         """
-        Sets value in node
+        Sets new array of values in UnrolledNode
 
-        :param new_val: New value to replace current value in node
+        :param new_array: New array of values to replace current array in UnrolledNode
         :return: None
         """
         # Check for valid arguments
-        if isinstance(new_val, Node):
-            raise TypeError('new_val must be of any type besides Node or any subclass')
-        self.__array[self.__index] = new_val
+        if not isinstance(new_array, Collection):
+            raise TypeError('new_val must be of type Collection')
+        if len(new_array) == 0:
+            raise ValueError('new_val must have at least one element')
+        self.__array = new_array
+
 
     @property
     def next(self) -> Optional[UnrolledNode]:
@@ -147,7 +153,7 @@ class UnrolledNode(Node):
         return any([item == val for item in self.__array])
 
 
-class UnrolledLinkedList(LinkedList):
+class UnrolledLinkedList(AbstractLinkedList):
     """Linked list implemented as sequence of arrays of contiguous nodes"""
 
     # METHODS
@@ -203,7 +209,7 @@ class UnrolledLinkedList(LinkedList):
 
     # PROPERTIES
     @property
-    def head(self) -> Optional[Node]:
+    def head(self) -> Optional[UnrolledNode]:
         """
         Head of linked list
 
@@ -212,7 +218,7 @@ class UnrolledLinkedList(LinkedList):
         return self.__head
 
     @property
-    def tail(self) -> Optional[Node]:
+    def tail(self) -> Optional[UnrolledNode]:
         """
         Tail of linked list
 
@@ -306,7 +312,7 @@ class UnrolledLinkedList(LinkedList):
     @multimethod
     @deprecated(version='1.0.0',
                 reason='The concept of an individual "node" is repressented by a value stored in array')
-    def push_back(self, node: Node) -> None:
+    def push_back(self, node: UnrolledNode) -> None:
         """
         Appends given node to end of linked list. Linked list is not modified if node already belongs
         to this linked list or another linked list.
@@ -325,7 +331,7 @@ class UnrolledLinkedList(LinkedList):
         :return: None
         """
         # Check for valid arguments
-        if isinstance(val, Node):
+        if isinstance(val, UnrolledNode):
             raise TypeError('val can be of any type except Node or any derived classes')
 
         # Edge case
@@ -351,7 +357,7 @@ class UnrolledLinkedList(LinkedList):
 
     @multimethod
     @deprecated(version='1.0.0', reason='The concept of an individual "node" is repressented by a value stored in array')
-    def push_front(self, node: Node) -> None:
+    def push_front(self, node: UnrolledNode) -> None:
         """
         Prepends given node to front of linked list. Linked list is not modified if node already belongs
         to this linked list or another linked list.
@@ -370,7 +376,7 @@ class UnrolledLinkedList(LinkedList):
         :return: None
         """
         # Checking for valid arguments
-        if isinstance(val, Node):
+        if isinstance(val, UnrolledNode):
             raise TypeError('val can be of any type except Node or any derived classes')
 
         # Edge case

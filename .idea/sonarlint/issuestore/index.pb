@@ -16,3 +16,5 @@ M
 ,Flite-1.0.0/LinkedList/UnrolledLinkedList.py,4\4\44f962891748e24cbd8eb0899f945fedc0936038
 T
 $Flite-1.0.0/LinkedList/LinkedList.py,9\3\93e6b4d9c368c054f01968802dab62a974e1f52a
+T
+$Flite-1.0.0/Array/HashedArrayTree.py,2\f\2f4e66f38c2d47d94e91c0c3b2e7868db24bedac

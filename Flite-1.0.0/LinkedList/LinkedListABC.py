@@ -2,6 +2,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from multimethod import multimethod
+import param
 from typing import Any, Collection, Optional
 
 
@@ -60,8 +61,8 @@ class AbstractLinkedList(ABC):
 
         :return: None
         """
-        self._capacity = None
-        self._size = 0
+        self._capacity = param.Integer(default=None, allow_None=True, doc='Maximum number of allowed nodes')
+        self._size = param.Integer(default=0, allow_None=False, doc='Number of nodes present in linked list')
 
     def __len__(self) -> int:
         """

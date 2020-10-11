@@ -78,6 +78,7 @@ class HashedArrayTree:
         self.__hat[top_index][leaf_index] = element
 
     # PROPERTIES
+    @property
     def capacity(self) -> int:
         """
         Gets the capacity of HAT.
@@ -86,6 +87,7 @@ class HashedArrayTree:
         """
         return self.__capacity
 
+    @property
     def power(self) -> int:
         """
         Gets the current power reflecting the size of the HAT

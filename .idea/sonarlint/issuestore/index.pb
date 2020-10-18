@@ -18,3 +18,9 @@ T
 $Flite-1.0.0/LinkedList/LinkedList.py,9\3\93e6b4d9c368c054f01968802dab62a974e1f52a
 T
 $Flite-1.0.0/Array/HashedArrayTree.py,2\f\2f4e66f38c2d47d94e91c0c3b2e7868db24bedac
+T
+$.idea/codeStyles/codeStyleConfig.xml,d\d\dd7b3350c29c49497756c7f32c69a3bed18b1cba
+Q
+!Flite-1.0.0/Queue/BatchedQueue.py,b\4\b4fe649c0782372b8433229d0eee7fa3fc2b0398
+Y
+)Flite-1.0.0/Queue/BatchedPriorityQueue.py,1\7\17e5e0e4bcae50c63d94e85bbf09b036a8740733
